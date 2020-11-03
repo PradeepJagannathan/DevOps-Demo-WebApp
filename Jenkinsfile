@@ -21,13 +21,14 @@ pipeline {
     stage('checkout'){
       steps {
         checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: "${gitURL}"]]])
-        slackSend channel: '#alerts', message: 'Testing Slack'
+        slackSend channel: '#alerts', message: 'Checking code from Git'
       }
     }
     stage('compile'){
       steps {
  //       def mvnHome = tool name: 'maven', type: maven
         sh "mvn compile"
+        slackSend channel: '#alerts', message: 'Compiling'
       }
     }
     stage ('static code analysis') {
@@ -41,12 +42,14 @@ pipeline {
       steps {
         sh 'mvn clean package'
         deploy adapters: [tomcat8(credentialsId: 'tomcat', path: '', url: "${tomcatTestURL}")], contextPath: '/QAWebapp', war: '**/*.war'
+        slackSend channel: '#alerts', message: 'Code is deployed to test'
       }
     }
     stage ('Artifact') {
       steps {
         rtUpload(serverId: 'artifactory')
         rtPublishBuildInfo (serverId: 'artifactory')
+        slackSend channel: '#alerts', message: 'Deployed code to arifact'
       }
     }        
     
@@ -54,17 +57,20 @@ pipeline {
       steps {
         sh 'mvn test'
         publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '\\functionaltest\\target\\surefire-reports', reportFiles: 'index.html', reportName: 'UI Test', reportTitles: ''])
+        slackSend channel: '#alerts', message: 'Generating UI report'
       }
     }
 //    stage("Performance Test") {
 //      steps {
 //        blazeMeterTest credentialsId: 'blazemeter', testId: '8578936.taurus', workspaceId: '667789'
+//        slackSend channel: '#alerts', message: 'Performanance test'
 //      }
 //    }
     stage ('Deploy to Prod') {
       steps {
         sh 'mvn clean install'
         deploy adapters: [tomcat8(credentialsId: 'tomcat', path: '', url: "${tomcatProdURL}")], contextPath: '/ProdWebapp', war: '**/*.war'
+        slackSend channel: '#alerts', message: 'Code is deployed to prod'
       }
     }
     
@@ -72,6 +78,7 @@ pipeline {
       steps {
         sh 'mvn test'
         publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '\\Acceptancetest\\target\\surefire-reports', reportFiles: 'index.html', reportName: 'Sanity Test', reportTitles: ''])
+        slackSend channel: '#alerts', message: 'Generating Sanity report'
       }
     }
 
