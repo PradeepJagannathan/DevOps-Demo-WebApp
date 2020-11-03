@@ -3,6 +3,9 @@ pipeline {
   environment {
     buildnum = currentBuild.getNumber()
     gitURL= "https://github.com/PradeepJagannathan/DevOps-Demo-WebApp.git"
+    sonarPath = 'http://52.148.170.197:9000'
+    sonarInclusion = '**/test/java/servlet/createpage_junit.java'
+    sonarExclusion = '**/test/java/servlet/createpage_junit.java'
     tomcatTestURL= "http://40.71.32.30:8080"
     tomcatProdURL= "http://52.255.182.18:8080"
     uiPath = "\\functionaltest\\target\\surefire-reports"
@@ -27,14 +30,13 @@ pipeline {
         sh "mvn compile"
       }
     }
-//    stage ('static code analysis') {
-//      steps {
-//        withSonarQubeEnv ('sonarqube') {
-//          sh 'mvn clean package sonar:sonar \
-//          -Dsonar.sources=. 
-//        }
-//      }
-//    }
+    stage ('static code analysis') {
+      steps {
+        withSonarQubeEnv(credentialsId: 'sonar') {
+          sh 'mvn clean compile sonar:sonar -Dsonar.host.url = ${sonarPath} -Dsonar.tests=. -Dsonar.inclusions=${sonarInclusion} -Dsonar.test.exclusion=${sonarExclusion} -Dsonar.login=admin -Dsonar.password=admin' 
+        }
+      }
+    }
     stage ('Deploy to Test') {
       steps {
         sh 'mvn clean package'
