@@ -18,6 +18,7 @@ pipeline {
     stage('checkout'){
       steps {
         checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: "${gitURL}"]]])
+        slackSend channel: '#alerts', message: 'Testing Slack'
       }
     }
     stage('compile'){
@@ -40,7 +41,12 @@ pipeline {
         deploy adapters: [tomcat8(credentialsId: 'tomcat', path: '', url: "${tomcatTestURL}")], contextPath: '/QAWebapp', war: '**/*.war'
       }
     }
-//    stage ('Artifact')
+    stage ('Artifact') {
+      steps {
+        rtUpload(serverId: 'artifactory')
+        rtPublishBuildInfo (serverId: 'artifactory')
+      }
+    }        
     
     stage ('Perform UI Test') {
       steps {
