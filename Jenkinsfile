@@ -3,7 +3,7 @@ pipeline {
   environment {
     buildnum = currentBuild.getNumber()
     gitURL= "https://github.com/PradeepJagannathan/DevOps-Demo-WebApp.git"
-    tomcatTestURL= "http://40.87.99.18:8080"
+    tomcatTestURL= "http://40.71.32.30:8080"
     tomcatProdURL= "http://52.225.182.18:8080"
     uiPath = "\\functionaltest\\target\\surefire-reports"
     sanityPath="\\Acceptance\\target\\surefire-reports"
