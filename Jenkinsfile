@@ -34,7 +34,7 @@ pipeline {
     stage ('static code analysis') {
       steps {
         withSonarQubeEnv(credentialsId: 'sonar',installationName:'sonarserver') {
-          sh "mvn -X compile sonar:sonar -Dsonar.host.url=${sonarPath} -Dsonar.sources=. -Dsonar.tests=. -Dsonar.inclusions=${sonarInclusion} -Dsonar.test.exclusion=${sonarExclusion} -Dsonar.login=admin -Dsonar.password=admin"
+          sh "mvn clean compile sonar:sonar -Dsonar.host.url=${sonarPath} -Dsonar.sources=. -Dsonar.tests=. -Dsonar.inclusions=${sonarInclusion} -Dsonar.test.exclusion=${sonarExclusion} -Dsonar.login=admin -Dsonar.password=admin"
         }
       }
     }
