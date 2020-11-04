@@ -20,6 +20,7 @@ pipeline {
   stages {
     stage ('Initiation') {
       steps {
+        jiraComment body: 'Jenkins Build ' +"${buildnum}" +'Initiated', issueKey: 'DT-3'
         slackSend channel: '#alerts', message: 'Jenkins Build ' +"${buildnum}" +'Initiated'
       }
     }
@@ -68,12 +69,12 @@ pipeline {
         slackSend channel: '#alerts', message: 'Generated UI test report'
       }
     }
-    stage("Performance Test") {
-      steps {
-        blazeMeterTest credentialsId: 'Blazemeter', testId: '8510506.taurus', workspaceId: '650230'
-        slackSend channel: '#alerts', message: 'Performanance test is complete'
-      }
-    }
+//    stage("Performance Test") {
+//      steps {
+//        blazeMeterTest credentialsId: 'Blazemeter', testId: '8510506.taurus', workspaceId: '650230'
+//        slackSend channel: '#alerts', message: 'Performanance test is complete'
+//      }
+//    }
     stage ('Deploy to Prod') {
       steps {
         sh 'mvn clean install'
@@ -99,9 +100,11 @@ pipeline {
   post {
         success {
           slackSend channel: '#alerts', message: 'Build success'
+          jiraComment body: 'Jenkins Build ' +"${buildnum}" +'SUCCESS!!', issueKey: 'DT-3'
         }
         failure {
           slackSend channel: '#alerts', message: 'Build Failed'
+          jiraComment body: 'Jenkins Build ' +"${buildnum}" +'FAILED!!', issueKey: 'DT-3'
         }
     } 
 }
