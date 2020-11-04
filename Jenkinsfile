@@ -3,7 +3,7 @@ pipeline {
   environment {
     buildnum = currentBuild.getNumber()
     gitURL= "https://github.com/PradeepJagannathan/DevOps-Demo-WebApp.git"
-    sonarPath = 'http://52.156.113.141:9000'
+    sonarPath = "http://52.156.113.141:9000"
     sonarInclusion = '**/test/java/servlet/createpage_junit.java'
     sonarExclusion = '**/test/java/servlet/createpage_junit.java'
     tomcatTestURL= "http://52.152.232.36:8080"
