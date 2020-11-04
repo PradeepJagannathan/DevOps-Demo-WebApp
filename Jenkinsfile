@@ -20,7 +20,7 @@ pipeline {
   stages {
     stage ('Initiation') {
       steps {
-        slackSend channel: '#alerts', message: ''Jenkins Build ' +"${buildnum}" +'Initiated!!''
+        slackSend channel: '#alerts', message: 'Jenkins Build ' +"${buildnum}" +'Initiated'
       }
     }
       
