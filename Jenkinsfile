@@ -3,11 +3,11 @@ pipeline {
   environment {
     buildnum = currentBuild.getNumber()
     gitURL= "https://github.com/PradeepJagannathan/DevOps-Demo-WebApp.git"
-    sonarPath = 'http://52.148.170.197:9000'
+    sonarPath = 'http://52.156.113.141:9000'
     sonarInclusion = '**/test/java/servlet/createpage_junit.java'
     sonarExclusion = '**/test/java/servlet/createpage_junit.java'
-    tomcatTestURL= "http://40.71.32.30:8080"
-    tomcatProdURL= "http://52.255.182.18:8080"
+    tomcatTestURL= "http://52.152.232.36:8080"
+    tomcatProdURL= "http://13.82.143.159:8080"
     uiPath = "\\functionaltest\\target\\surefire-reports"
     sanityPath="\\Acceptance\\target\\surefire-reports"
   }
