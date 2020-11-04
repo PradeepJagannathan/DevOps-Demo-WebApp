@@ -26,18 +26,17 @@ pipeline {
       
     stage('checkout'){
       steps {
-        checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: "${gitURL}"]]])
-        slackSend channel: '#alerts', message: 'Code checked out from Git'
+        try {
+          checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: "${gitURL}"]]])
+          slackSend channel: '#alerts', message: 'Code checked out from Git'
+        }
+        catch {
+          slackSend channel: '#alerts', message: 'Code check out from Git failed'
+          throw
+        }
       }
     }
-    post {
-      success {
-        slackSend channel: '#alerts', message: 'Code checked out from Git'
-      }
-      failure {
-        slackSend channel: '#alerts', message: 'Code check out from Git failed'
-      }
-    }   
+     
     stage('compile'){
       steps {
         def mvnHome = tool name: 'maven', type: maven
@@ -103,5 +102,13 @@ pipeline {
       }
     }
   }
+  post {
+        success {
+          slackSend channel: '#alerts', message: 'Build success'
+        }
+        failure {
+          slackSend channel: '#alerts', message: 'Build Failed'
+        }
+    } 
 }
     
