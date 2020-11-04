@@ -32,7 +32,6 @@ pipeline {
         }
         catch (exc) {
           slackSend channel: '#alerts', message: 'Code check out from Git failed'
-          throw
         }
       }
     }
