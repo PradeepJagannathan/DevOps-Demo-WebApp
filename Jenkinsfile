@@ -30,7 +30,7 @@ pipeline {
           checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: "${gitURL}"]]])
           slackSend channel: '#alerts', message: 'Code checked out from Git'
         }
-        catch {
+        catch (exc) {
           slackSend channel: '#alerts', message: 'Code check out from Git failed'
           throw
         }
