@@ -24,13 +24,13 @@ pipeline {
         slackSend channel: '#alerts', message: 'Checking code from Git'
       }
     }
-    stage('compile'){
-      steps {
+  //  stage('compile'){
+  //    steps {
  //       def mvnHome = tool name: 'maven', type: maven
-        sh "mvn compile"
-        slackSend channel: '#alerts', message: 'Compiling'
-      }
-    }
+ //       sh "mvn compile"
+ //       slackSend channel: '#alerts', message: 'Compiling'
+ //     }
+ //   }
     stage ('static code analysis') {
       steps {
         withSonarQubeEnv(credentialsId: 'sonar',installationName:'sonarserver') {
