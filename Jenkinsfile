@@ -18,23 +18,38 @@ pipeline {
   }
   
   stages {
+    stage ('Initiation') {
+      steps {
+        slackSend channel: '#alerts', message: ''Jenkins Build ' +"${buildnum}" +'Initiated!!''
+      }
+    }
+      
     stage('checkout'){
       steps {
         checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: "${gitURL}"]]])
-        slackSend channel: '#alerts', message: 'Checking code from Git'
+        slackSend channel: '#alerts', message: 'Code checked out from Git'
       }
     }
-  //  stage('compile'){
-  //    steps {
- //       def mvnHome = tool name: 'maven', type: maven
- //       sh "mvn compile"
- //       slackSend channel: '#alerts', message: 'Compiling'
- //     }
- //   }
+    post {
+      success {
+        slackSend channel: '#alerts', message: 'Code checked out from Git'
+      }
+      failure {
+        slackSend channel: '#alerts', message: 'Code check out from Git failed'
+      }
+    }   
+    stage('compile'){
+      steps {
+        def mvnHome = tool name: 'maven', type: maven
+        sh "mvn compile"
+        slackSend channel: '#alerts', message: 'Application Compiled'
+      }
+    }
     stage ('static code analysis') {
       steps {
         withSonarQubeEnv(credentialsId: 'sonar',installationName:'sonarserver') {
           sh "mvn clean compile sonar:sonar -Dsonar.host.url=${sonarPath} -Dsonar.sources=. -Dsonar.tests=. -Dsonar.inclusions=${sonarInclusion} -Dsonar.test.exclusions=${sonarExclusion} -Dsonar.login=admin -Dsonar.password=admin"
+          slackSend channel: '#alerts', message: 'Static code analysis is complete'
         }
       }
     }
@@ -49,7 +64,7 @@ pipeline {
       steps {
         rtUpload(serverId: 'artifactory')
         rtPublishBuildInfo (serverId: 'artifactory')
-        slackSend channel: '#alerts', message: 'Deployed code to arifact'
+        slackSend channel: '#alerts', message: 'Deployed code to artifact'
       }
     }        
     
@@ -57,15 +72,15 @@ pipeline {
       steps {
         sh 'mvn test'
         publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '\\functionaltest\\target\\surefire-reports', reportFiles: 'index.html', reportName: 'UI Test', reportTitles: ''])
-        slackSend channel: '#alerts', message: 'Generating UI report'
+        slackSend channel: '#alerts', message: 'Generated UI test report'
       }
     }
-//    stage("Performance Test") {
-//      steps {
-//        blazeMeterTest credentialsId: 'blazemeter', testId: '8578936.taurus', workspaceId: '667789'
-//        slackSend channel: '#alerts', message: 'Performanance test'
-//      }
-//    }
+    stage("Performance Test") {
+      steps {
+        blazeMeterTest credentialsId: 'Blazemeter', testId: '8510506.taurus', workspaceId: '650230'
+        slackSend channel: '#alerts', message: 'Performanance test is complete'
+      }
+    }
     stage ('Deploy to Prod') {
       steps {
         sh 'mvn clean install'
@@ -78,10 +93,15 @@ pipeline {
       steps {
         sh 'mvn test'
         publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '\\Acceptancetest\\target\\surefire-reports', reportFiles: 'index.html', reportName: 'Sanity Test', reportTitles: ''])
-        slackSend channel: '#alerts', message: 'Generating Sanity report'
+        slackSend channel: '#alerts', message: 'Sanity test is complete'
       }
     }
-
+    
+    stage ('Completion') {
+      steps {
+        slackSend channel: '#alerts', message: 'Jenkins Build ' +"${buildnum}" +' SUCCESS!!'
+      }
+    }
   }
 }
     
