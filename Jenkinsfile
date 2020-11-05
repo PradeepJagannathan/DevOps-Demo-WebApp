@@ -65,7 +65,7 @@ pipeline {
     
     stage ('Perform UI Test') {
       steps {
-        sh 'mvn test-f functionaltest/pom.xml'
+        sh 'mvn test functionaltest/pom.xml'
         publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '\\functionaltest\\target\\surefire-reports', reportFiles: 'index.html', reportName: 'UI Test', reportTitles: ''])
         slackSend channel: '#alerts', message: 'Generated UI test report'
       }
