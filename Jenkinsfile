@@ -70,12 +70,12 @@ pipeline {
         slackSend channel: '#alerts', message: 'Generated UI test report'
       }
     }
-//    stage("Performance Test") {
-//      steps {
-//        blazeMeterTest credentialsId: 'Blazemeter', testId: '8510506.taurus', workspaceId: '650230'
-//        slackSend channel: '#alerts', message: 'Performanance test is complete'
-//      }
-//    }
+    stage("Performance Test") {
+      steps {
+        blazeMeterTest credentialsId: 'Blazemeter', testId: '8510506.taurus', workspaceId: '650230'
+        slackSend channel: '#alerts', message: 'Performanance test is complete'
+      }
+    }
     stage ('Deploy to Prod') {
       steps {
         sh 'mvn clean install'
