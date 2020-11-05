@@ -20,8 +20,8 @@ pipeline {
   stages {
     stage ('Initiation') {
       steps {
-        jiraComment body: 'Jenkins Build ' +"${buildnum}" +'Initiated', issueKey: 'DT-3'
-        slackSend channel: '#alerts', message: 'Jenkins Build ' +"${buildnum}" +'Initiated'
+        jiraComment body: 'Jenkins Build ' +"${buildnum}" +' Initiated', issueKey: 'DT-3'
+        slackSend channel: '#alerts', message: 'Jenkins Build ' +"${buildnum}" +' Initiated'
       }
     }
       
@@ -52,6 +52,7 @@ pipeline {
         sh 'mvn clean package'
         deploy adapters: [tomcat8(credentialsId: 'tomcat', path: '', url: "${tomcatTestURL}")], contextPath: '/QAWebapp', war: '**/*.war'
         slackSend channel: '#alerts', message: 'Code is deployed to test'
+        jiraSendDeploymentInfo environmentId: 'Test', environmentName: 'Test', environmentType: 'testing', serviceIds: ['http://104.211.55.157:8080/QAWebapp'], site: 'devops-bootcamp.atlassian.net', state: 'successful'
       }
     }
     stage ('Artifact') {
@@ -64,7 +65,7 @@ pipeline {
     
     stage ('Perform UI Test') {
       steps {
-        sh 'mvn test'
+        sh 'mvn test-f functionaltest/pom.xml'
         publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '\\functionaltest\\target\\surefire-reports', reportFiles: 'index.html', reportName: 'UI Test', reportTitles: ''])
         slackSend channel: '#alerts', message: 'Generated UI test report'
       }
@@ -80,12 +81,13 @@ pipeline {
         sh 'mvn clean install'
         deploy adapters: [tomcat8(credentialsId: 'tomcat', path: '', url: "${tomcatProdURL}")], contextPath: '/ProdWebapp', war: '**/*.war'
         slackSend channel: '#alerts', message: 'Code is deployed to prod'
+        jiraSendDeploymentInfo environmentId: 'Prod', environmentName: 'Prod', environmentType: 'production', serviceIds: ['http://13.82.83.40:8080/ProdWebapp'], site: 'devops-bootcamp.atlassian.net', state: 'successful'
       }
     }
     
     stage ('Sanity Test') {
       steps {
-        sh 'mvn test'
+        sh 'mvn test Acceptancetest/pom.xml'
         publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '\\Acceptancetest\\target\\surefire-reports', reportFiles: 'index.html', reportName: 'Sanity Test', reportTitles: ''])
         slackSend channel: '#alerts', message: 'Sanity test is complete'
       }
@@ -100,11 +102,11 @@ pipeline {
   post {
         success {
           slackSend channel: '#alerts', message: 'Build success'
-          jiraComment body: 'Jenkins Build ' +"${buildnum}" +'SUCCESS!!', issueKey: 'DT-3'
+          jiraComment body: 'Jenkins Build ' +"${buildnum}" +' SUCCESS!!', issueKey: 'DT-3'
         }
         failure {
           slackSend channel: '#alerts', message: 'Build Failed'
-          jiraComment body: 'Jenkins Build ' +"${buildnum}" +'FAILED!!', issueKey: 'DT-3'
+          jiraComment body: 'Jenkins Build ' +"${buildnum}" +' FAILED!!', issueKey: 'DT-3'
         }
     } 
 }
