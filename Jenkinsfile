@@ -95,7 +95,7 @@ pipeline {
     
     stage ('Completion') {
       steps {
-        slackSend channel: '#alerts', message: 'Jenkins Build ' +"${buildnum}" +' SUCCESS!!'
+        slackSend channel: '#alerts', message: 'Jenkins Build ' +"${buildnum}" +' SUCCESS!'
       }
     }
   }
