@@ -65,7 +65,7 @@ pipeline {
     
     stage ('Perform UI Test') {
       steps {
-        sh 'mvn test functionaltest/pom.xml'
+        sh 'mvn test -f functionaltest/pom.xml'
         publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '\\functionaltest\\target\\surefire-reports', reportFiles: 'index.html', reportName: 'UI Test', reportTitles: ''])
         slackSend channel: '#alerts', message: 'Generated UI test report'
       }
@@ -87,7 +87,7 @@ pipeline {
     
     stage ('Sanity Test') {
       steps {
-        sh 'mvn test Acceptancetest/pom.xml'
+        sh 'mvn test -f Acceptancetest/pom.xml'
         publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '\\Acceptancetest\\target\\surefire-reports', reportFiles: 'index.html', reportName: 'Sanity Test', reportTitles: ''])
         slackSend channel: '#alerts', message: 'Sanity test is complete'
       }
