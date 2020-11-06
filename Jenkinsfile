@@ -3,11 +3,11 @@ pipeline {
   environment {
     buildnum = currentBuild.getNumber()
     gitURL= "https://github.com/PradeepJagannathan/DevOps-Demo-WebApp.git"
-    sonarPath = "http://52.229.20.174:9000"
+    sonarPath = "http://52.175.205.222:9000"
     sonarInclusion = '**/test/java/servlet/createpage_junit.java'
     sonarExclusion = '**/test/java/servlet/createpage_junit.java'
-    tomcatTestURL= "http://104.211.55.157:8080"
-    tomcatProdURL= "http://13.82.83.40:8080"
+    tomcatTestURL= "http://40.117.103.71:8080"
+    tomcatProdURL= "http://168.61.32.36:8080"
     uiPath = "\\functionaltest\\target\\surefire-reports"
     sanityPath="\\Acceptance\\target\\surefire-reports"
   }
@@ -52,7 +52,7 @@ pipeline {
         sh 'mvn clean package'
         deploy adapters: [tomcat8(credentialsId: 'tomcat', path: '', url: "${tomcatTestURL}")], contextPath: '/QAWebapp', war: '**/*.war'
         slackSend channel: '#alerts', message: 'Code is deployed to test'
-        jiraSendDeploymentInfo environmentId: 'Test', environmentName: 'Test', environmentType: 'testing', serviceIds: ['http://104.211.55.157:8080/QAWebapp'], site: 'devops-bootcamp.atlassian.net', state: 'successful'
+        jiraSendDeploymentInfo environmentId: 'Test', environmentName: 'Test', environmentType: 'testing', serviceIds: ['http://40.117.103.71:8080/QAWebapp'], site: 'devops-bootcamp.atlassian.net', state: 'successful'
       }
     }
     stage ('Artifact') {
@@ -81,7 +81,7 @@ pipeline {
         sh 'mvn clean install'
         deploy adapters: [tomcat8(credentialsId: 'tomcat', path: '', url: "${tomcatProdURL}")], contextPath: '/ProdWebapp', war: '**/*.war'
         slackSend channel: '#alerts', message: 'Code is deployed to prod'
-        jiraSendDeploymentInfo environmentId: 'Prod', environmentName: 'Prod', environmentType: 'production', serviceIds: ['http://13.82.83.40:8080/ProdWebapp'], site: 'devops-bootcamp.atlassian.net', state: 'successful'
+        jiraSendDeploymentInfo environmentId: 'Prod', environmentName: 'Prod', environmentType: 'production', serviceIds: ['http://168.61.32.36:8080/ProdWebapp'], site: 'devops-bootcamp.atlassian.net', state: 'successful'
       }
     }
     
