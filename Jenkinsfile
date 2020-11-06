@@ -102,7 +102,7 @@ pipeline {
   post {
         success {
           slackSend channel: '#alerts', message: 'Build success'
-          jiraComment body: 'Jenkins Build ' +"${buildnum}" +' SUCCESS!!', issueKey: 'DT-3'
+          jiraComment body: 'Jenkins Build ' +"${buildnum}" +' SUCCESS!!!', issueKey: 'DT-3'
         }
         failure {
           slackSend channel: '#alerts', message: 'Build Failed'
